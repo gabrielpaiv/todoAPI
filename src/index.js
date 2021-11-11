@@ -23,11 +23,11 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 app.post("/users", (request, response) => {
-  const { name, username } = request.body;
+  const { username, name } = request.body;
 
-  const userExists = users.some((user) => user.name === name);
+  const userAlreadyExists = users.find((user) => user.name === name);
 
-  if (userExists) {
+  if (userAlreadyExists) {
     return response.status(400).json({ error: "User already exists" });
   }
 
@@ -98,15 +98,15 @@ app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
   const { user } = request;
   const { id } = request.params;
 
-  const todo = user.todos.find((todo) => todo.id === id);
+  const todoIndex = user.todos.findIndex((todo) => todo.id === id);
 
-  if (!todo) {
+  if (todoIndex === -1) {
     return response.status(400).json({ error: "Todo doesn't exists" });
   }
 
-  user.todos.splice(indexOf(todo), 1);
+  user.todos.splice(todoIndex, 1);
 
-  return response.status(200).send();
+  return response.status(204).send();
 });
 
 module.exports = app;
